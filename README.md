@@ -6,7 +6,10 @@ Self-taught since typing BASIC out of magazines on the family Commodore 64. 25+ 
 
 Most of my work lives in private repos, so here’s the short version:
 
-<img src="assets/skills.svg" width="100%" alt="Front-end: TypeScript, JavaScript, React, Astro, Next.js, Tailwind CSS, Sass, semantic HTML/CSS. Data and data viz: D3, large public data sets, charts and maps, Leaflet, data pipelines. Back-end and data: Node.js, Express, GraphQL, PostgreSQL, MySQL, Strapi, Docker. Craft: performance and Core Web Vitals, accessibility, responsive layout, motion, a designer's eye.">
+<picture>
+  <source media="(max-width: 600px)" srcset="assets/skills-stacked.svg">
+  <img src="assets/skills.svg" width="100%" alt="Front-end: TypeScript, JavaScript, React, Astro, Next.js, Tailwind CSS, Sass, semantic HTML/CSS. Data and data viz: D3, large public data sets, charts and maps, Leaflet, data pipelines. Back-end and data: Node.js, Express, GraphQL, PostgreSQL, MySQL, Strapi, Docker. Craft: performance and Core Web Vitals, accessibility, responsive layout, motion, a designer's eye.">
+</picture>
 
 **Also:** Puppeteer, Cheerio and Sharp for scraping and image pipelines · Vitest and Playwright for testing · Netlify, Vercel and custom VPS setups for hosting
 

@@ -406,10 +406,10 @@ def title_face(spec) -> Face:
     return archivo(weight, stretch, "ArchivoTitle")
 
 
-def skills() -> str:
-    W = 1200
+def skills(columns: int = 2, W: int = 1200) -> str:
+    """The skill panels as a grid: two columns for desktop, one for phones."""
     gap = 24
-    pw = (W - gap) / 2
+    pw = (W - gap * (columns - 1)) / columns
     pad = 28
     chip_size, chip_h, chip_px, chip_gap = 16, 34, 13, 10
     display = title_face(TITLE["face"])
@@ -428,14 +428,21 @@ def skills() -> str:
         return rows
 
     laid = [layout(items) for _, _, items in PANELS]
-    max_rows = max(len(r) for r in laid)
-    ph = 104 + max_rows * (chip_h + chip_gap) + pad - chip_gap
-    H = ph * 2 + gap
+
+    def height(rows: int) -> float:
+        return 104 + rows * (chip_h + chip_gap) + pad - chip_gap
+
+    # Each grid row is as tall as its tallest panel.
+    grid_rows = [laid[i : i + columns] for i in range(0, len(laid), columns)]
+    row_h = [height(max(len(r) for r in group)) for group in grid_rows]
+    row_y = [sum(row_h[:k]) + gap * k for k in range(len(row_h))]
+    H = row_y[-1] + row_h[-1]
 
     parts = []
     for i, ((num, title, _), rows) in enumerate(zip(PANELS, laid)):
-        ox = (i % 2) * (pw + gap)
-        oy = (i // 2) * (ph + gap)
+        ox = (i % columns) * (pw + gap)
+        oy = row_y[i // columns]
+        ph = row_h[i // columns]
         parts.append(f'<g transform="translate({ox:.1f} {oy:.1f})">')
         parts.append(f'<rect x="1" y="1" width="{pw - 2:.1f}" height="{ph - 2}" fill="{AUBERGINE}" stroke="{PLUM}" stroke-width="2"/>')
         parts.append(f'<rect width="6" height="{ph}" fill="{MAGENTA if i % 2 == 0 else COPPER}"/>')
@@ -460,7 +467,7 @@ def skills() -> str:
     style = "".join(f.face_css() for f in (display, mono4))
     alt = "; ".join(f"{t}: {', '.join(items)}" for _, t, items in PANELS)
     return (
-        f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" width="{W}" height="{H}" '
+        f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H:.0f}" width="{W}" height="{H:.0f}" '
         f'role="img" aria-labelledby="t"><title id="t">{escape(alt)}</title>'
         f"<defs><style>{style}</style></defs>"
         + "".join(parts)
@@ -470,7 +477,12 @@ def skills() -> str:
 
 def main() -> None:
     ASSETS.mkdir(exist_ok=True)
-    for name, build in (("banner.svg", banner), ("skills.svg", skills)):
+    builds = (
+        ("banner.svg", banner),
+        ("skills.svg", skills),
+        ("skills-stacked.svg", lambda: skills(columns=1, W=480)),
+    )
+    for name, build in builds:
         svg = build()
         (ASSETS / name).write_text(svg, encoding="utf-8")
         print(f"{name}: {len(svg) / 1024:.0f} KB")
